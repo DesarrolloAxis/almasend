@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
@@ -16,14 +16,36 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { leadSchema, type LeadInput, type LeadType } from "@/lib/lead-schema";
+import {
+  leadSchema,
+  planLabels,
+  planOptions,
+  type LeadInput,
+  type LeadType,
+} from "@/lib/lead-schema";
 
 type LeadFormProps = {
   type: LeadType;
   trigger: React.ReactNode;
   title?: string;
   description?: string;
+};
+
+const emptyValues: LeadInput = {
+  name: "",
+  businessName: "",
+  email: "",
+  phone: "",
+  message: "",
+  type: "comprador",
+  businessRut: "",
+  businessAddress: "",
+  city: "",
+  needsInvoicing: undefined,
+  isCencocalClient: undefined,
+  plan: undefined,
 };
 
 export function LeadForm({
@@ -39,19 +61,13 @@ export function LeadForm({
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<LeadInput>({
     resolver: zodResolver(leadSchema),
-    defaultValues: {
-      name: "",
-      businessName: "",
-      email: "",
-      phone: "",
-      message: "",
-      type,
-    },
+    defaultValues: { ...emptyValues, type },
   });
 
   async function onSubmit(values: LeadInput) {
@@ -66,7 +82,7 @@ export function LeadForm({
       if (!res.ok) throw new Error("request failed");
 
       setStatus("success");
-      reset({ ...values, name: "", businessName: "", email: "", phone: "", message: "" });
+      reset({ ...emptyValues, type });
     } catch {
       setStatus("error");
     }
@@ -109,20 +125,6 @@ export function LeadForm({
               )}
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="businessName">
-                {type === "proveedor" ? "Nombre de la empresa" : "Nombre del almacén o negocio"}
-              </Label>
-              <Input
-                id="businessName"
-                placeholder={type === "proveedor" ? "Distribuidora Ejemplo Ltda." : "Minimarket Don José"}
-                {...register("businessName")}
-              />
-              {errors.businessName && (
-                <p className="text-xs text-destructive">{errors.businessName.message}</p>
-              )}
-            </div>
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="email">Correo</Label>
@@ -140,6 +142,127 @@ export function LeadForm({
                 )}
               </div>
             </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="businessName">
+                {type === "proveedor" ? "Nombre de la empresa" : "Razón social"}
+              </Label>
+              <Input
+                id="businessName"
+                placeholder={type === "proveedor" ? "Distribuidora Ejemplo Ltda." : "Minimarket Don José SpA"}
+                {...register("businessName")}
+              />
+              {errors.businessName && (
+                <p className="text-xs text-destructive">{errors.businessName.message}</p>
+              )}
+            </div>
+
+            {type === "comprador" && (
+              <>
+                <p className="-mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Datos de la empresa
+                </p>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="businessRut">Rut empresa</Label>
+                  <Input id="businessRut" placeholder="76.123.456-7" {...register("businessRut")} />
+                  {errors.businessRut && (
+                    <p className="text-xs text-destructive">{errors.businessRut.message}</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="businessAddress">Dirección</Label>
+                  <Input
+                    id="businessAddress"
+                    placeholder="Av. Siempre Viva 742"
+                    {...register("businessAddress")}
+                  />
+                  {errors.businessAddress && (
+                    <p className="text-xs text-destructive">{errors.businessAddress.message}</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="city">Ciudad</Label>
+                  <Input id="city" placeholder="Santiago" {...register("city")} />
+                  {errors.city && (
+                    <p className="text-xs text-destructive">{errors.city.message}</p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="flex flex-col gap-1.5">
+                    <Label>¿Requiere facturador?</Label>
+                    <Controller
+                      control={control}
+                      name="needsInvoicing"
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="si">Sí</SelectItem>
+                            <SelectItem value="no">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.needsInvoicing && (
+                      <p className="text-xs text-destructive">{errors.needsInvoicing.message}</p>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <Label>¿Es cliente de Cencocal?</Label>
+                    <Controller
+                      control={control}
+                      name="isCencocalClient"
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="si">Sí</SelectItem>
+                            <SelectItem value="no">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.isCencocalClient && (
+                      <p className="text-xs text-destructive">{errors.isCencocalClient.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label>¿Qué plan desea?</Label>
+                  <Controller
+                    control={control}
+                    name="plan"
+                    render={({ field }) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un plan" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {planOptions.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {planLabels[option]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.plan && (
+                    <p className="text-xs text-destructive">{errors.plan.message}</p>
+                  )}
+                </div>
+              </>
+            )}
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="message">Cuéntanos más (opcional)</Label>

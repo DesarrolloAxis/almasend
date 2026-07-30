@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { LogoMark } from "@/components/logo-mark";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { getLeads } from "@/lib/leads";
+import { planLabels, type PlanOption } from "@/lib/lead-schema";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +14,15 @@ const filters = [
   { value: "comprador", label: "Compradores" },
   { value: "proveedor", label: "Proveedores" },
 ] as const;
+
+function YesNoBadge({ value }: { value?: "si" | "no" }) {
+  if (!value) return <span className="text-muted-foreground">—</span>;
+  return (
+    <Badge variant={value === "si" ? "accent" : "outline"} className="whitespace-nowrap">
+      {value === "si" ? "Sí" : "No"}
+    </Badge>
+  );
+}
 
 export default async function AdminPage({
   searchParams,
@@ -61,20 +71,24 @@ export default async function AdminPage({
         </div>
 
         <div className="mt-6 overflow-x-auto rounded-2xl border border-border bg-background">
-          <table className="w-full min-w-[720px] text-sm">
+          <table className="w-full min-w-[1100px] text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Fecha</th>
                 <th className="px-4 py-3 font-medium">Nombre</th>
                 <th className="px-4 py-3 font-medium">Negocio</th>
+                <th className="px-4 py-3 font-medium">Ubicación</th>
                 <th className="px-4 py-3 font-medium">Contacto</th>
                 <th className="px-4 py-3 font-medium">Tipo</th>
+                <th className="px-4 py-3 font-medium">Plan</th>
+                <th className="px-4 py-3 font-medium">Facturador</th>
+                <th className="px-4 py-3 font-medium">Cencocal</th>
                 <th className="px-4 py-3 font-medium">Mensaje</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((lead) => (
-                <tr key={lead.id} className="border-b border-border last:border-0">
+                <tr key={lead.id} className="border-b border-border last:border-0 align-top">
                   <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                     {new Date(lead.createdAt).toLocaleString("es-CL", {
                       dateStyle: "short",
@@ -82,7 +96,25 @@ export default async function AdminPage({
                     })}
                   </td>
                   <td className="px-4 py-3 font-medium">{lead.name}</td>
-                  <td className="px-4 py-3">{lead.businessName}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col">
+                      <span>{lead.businessName}</span>
+                      {lead.businessRut && (
+                        <span className="text-muted-foreground">{lead.businessRut}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="max-w-[220px] px-4 py-3">
+                    <div className="flex flex-col">
+                      {lead.city && <span>{lead.city}</span>}
+                      {lead.businessAddress && (
+                        <span className="text-muted-foreground">{lead.businessAddress}</span>
+                      )}
+                      {!lead.city && !lead.businessAddress && (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-col">
                       <a href={`mailto:${lead.email}`} className="hover:underline">
@@ -96,6 +128,15 @@ export default async function AdminPage({
                       {lead.type === "proveedor" ? "Proveedor" : "Comprador"}
                     </Badge>
                   </td>
+                  <td className="whitespace-nowrap px-4 py-3">
+                    {lead.plan ? planLabels[lead.plan as PlanOption] : "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <YesNoBadge value={lead.needsInvoicing} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <YesNoBadge value={lead.isCencocalClient} />
+                  </td>
                   <td className="max-w-xs px-4 py-3 text-muted-foreground">
                     {lead.message || "—"}
                   </td>
@@ -104,7 +145,7 @@ export default async function AdminPage({
 
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
+                  <td colSpan={10} className="px-4 py-10 text-center text-muted-foreground">
                     Todavía no hay leads.
                   </td>
                 </tr>
