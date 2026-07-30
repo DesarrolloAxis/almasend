@@ -1,14 +1,14 @@
-import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-// TODO: swap for the real Almasend logo asset once available (see public/).
+import logo from "../../public/almasend-logo.png";
+
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <span
-      className={cn(
-        "inline-block size-8 rounded-full bg-[conic-gradient(from_180deg,#e94fb3,#f5a623,#4fc3f7,#e94fb3)]",
-        className
-      )}
-      aria-hidden
+    <Image
+      src={logo}
+      alt="Almasend"
+      priority
+      className={className ?? "h-8 w-auto"}
     />
   );
 }

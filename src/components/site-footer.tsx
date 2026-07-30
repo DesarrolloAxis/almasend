@@ -15,10 +15,7 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-secondary/40">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
-          <div className="flex items-center gap-2 font-bold text-lg tracking-tight">
-            <LogoMark />
-            Almasend
-          </div>
+          <LogoMark className="h-8 w-auto" />
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
             El sistema POS integral para el canal tradicional: ventas, inventario y DTE en una
             sola plataforma.
