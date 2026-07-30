@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LogoMark } from "@/components/logo-mark";
 import { CLIENT_LOGIN_URL, SUPPORT_EMAIL, SUPPORT_PHONE } from "@/lib/constants";
 
 const footerLinks = [
@@ -15,9 +16,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
           <div className="flex items-center gap-2 font-bold text-lg tracking-tight">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              A
-            </span>
+            <LogoMark />
             Almasend
           </div>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">

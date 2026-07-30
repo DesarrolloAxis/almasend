@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { LeadForm } from "@/components/lead-form";
+import { LogoMark } from "@/components/logo-mark";
 import { CLIENT_LOGIN_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -23,9 +24,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg tracking-tight">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            A
-          </span>
+          <LogoMark />
           Almasend
         </Link>
 
