@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { leadSchema, type LeadInput, type LeadType } from "@/lib/leads";
+import { leadSchema, type LeadInput, type LeadType } from "@/lib/lead-schema";
 
 type LeadFormProps = {
   type: LeadType;

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { leadSchema, submitLead } from "@/lib/leads";
+import { leadSchema } from "@/lib/lead-schema";
+import { submitLead } from "@/lib/leads";
 
 export async function POST(request: Request) {
   let body: unknown;
