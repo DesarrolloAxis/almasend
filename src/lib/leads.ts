@@ -2,6 +2,7 @@ import "server-only";
 
 import { pool } from "@/lib/db";
 import type { Lead, LeadInput } from "@/lib/lead-schema";
+import { notifyNewLead } from "@/lib/notify-lead";
 
 function yesNoToBool(value: LeadInput["needsInvoicing"]): boolean | null {
   if (!value) return null;
@@ -10,11 +11,11 @@ function yesNoToBool(value: LeadInput["needsInvoicing"]): boolean | null {
 
 /**
  * Single integration point for new leads captured on the site.
- * Persists to Postgres so the admin panel can list them.
+ * Persists to Postgres so the admin panel can list them, and sends an
+ * internal email notification.
  *
- * TODO(integration): also notify via Resend email and/or forward to a
- * CRM webhook once those destinations are decided, e.g.:
- *   await resend.emails.send({ ... })
+ * TODO(integration): forward to a CRM webhook once that destination is
+ * decided, e.g.:
  *   await fetch(process.env.CRM_WEBHOOK_URL, { method: "POST", body: JSON.stringify(lead) })
  */
 export async function submitLead(lead: LeadInput): Promise<void> {
@@ -39,6 +40,8 @@ export async function submitLead(lead: LeadInput): Promise<void> {
       lead.plan || null,
     ]
   );
+
+  await notifyNewLead(lead);
 }
 
 export async function getLeads(): Promise<Lead[]> {
