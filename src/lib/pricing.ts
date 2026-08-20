@@ -29,6 +29,7 @@ export const pricingTiers: PricingTier[] = [
     description: "El plan más elegido por minimarkets con equipo.",
     features: [
       "5 usuarios",
+      "Multi-sucursal",
       "DTEs ilimitados",
       "Reportes avanzados",
       "Soporte prioritario",
